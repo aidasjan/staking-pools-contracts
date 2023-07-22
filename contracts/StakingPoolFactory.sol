@@ -10,7 +10,7 @@ contract StakingPoolFactory is Ownable {
     address public tokenAddress;
     address public operatorAddress;
 
-    event StakingPoolDeployed(address indexed stakingPool);
+    event StakingPoolCreated(address indexed stakingPool);
 
     constructor(address _tokenAddress, address _operatorAddress) {
         tokenAddress = _tokenAddress;
@@ -52,11 +52,15 @@ contract StakingPoolFactory is Ownable {
         token.approve(stakingPoolAddress, maxRewardAmount);
         token.transferFrom(operatorAddress, address(this), maxRewardAmount);
 
-        emit StakingPoolDeployed(stakingPoolAddress);
+        emit StakingPoolCreated(stakingPoolAddress);
     }
 
-    function getStakingPools() external view returns (address[] memory) {
+    function getAllStakingPools() external view returns (address[] memory) {
         return stakingPools;
+    }
+
+    function setOperator(address _operatorAddress) external {
+        operatorAddress = _operatorAddress;
     }
 
     function withdrawTokens(uint256 amount) external onlyOperator {

@@ -94,21 +94,22 @@ contract StakingPool is ReentrancyGuard, Ownable {
             stakingPeriod) /
             3600 /
             100;
-        uint256 totalAmount = stakes[msg.sender].amount + reward;
 
         IERC20 token = IERC20(tokenAddress);
+
         require(
-            token.balanceOf(rewarderAddress) >= totalAmount,
+            token.balanceOf(rewarderAddress) >= reward,
             "StakingPool: Insufficient balance in the rewarder"
         );
         require(
-            token.allowance(rewarderAddress, address(this)) >= totalAmount,
+            token.allowance(rewarderAddress, address(this)) >= reward,
             "StakingPool: Insufficient allowance in the rewarder"
         );
 
-        delete stakes[msg.sender];
-        token.transferFrom(rewarderAddress, msg.sender, totalAmount);
+        token.transfer(msg.sender, stakes[msg.sender].amount);
+        token.transferFrom(rewarderAddress, msg.sender, reward);
 
-        emit Unstaked(msg.sender, totalAmount, reward);
+        emit Unstaked(msg.sender, stakes[msg.sender].amount, reward);
+        delete stakes[msg.sender];
     }
 }
