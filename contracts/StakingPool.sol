@@ -47,7 +47,7 @@ contract StakingPool is ReentrancyGuard, Ownable {
         totalStaked = 0;
     }
 
-    function stake(uint256 amount) external nonReentrant {
+    function stakeTokens(uint256 amount) external nonReentrant {
         require(amount > 0, "StakingPool: Amount should be greater than zero");
         require(
             stakes[msg.sender].amount == 0,
@@ -75,7 +75,7 @@ contract StakingPool is ReentrancyGuard, Ownable {
         emit Staked(msg.sender, amount);
     }
 
-    function unstake() external nonReentrant {
+    function unstakeTokens() external nonReentrant {
         require(stakes[msg.sender].amount > 0, "StakingPool: No active stake");
 
         uint256 stakingPeriod = block.timestamp -
@@ -108,6 +108,7 @@ contract StakingPool is ReentrancyGuard, Ownable {
 
         token.transfer(msg.sender, stakes[msg.sender].amount);
         token.transferFrom(rewarderAddress, msg.sender, reward);
+        totalStaked -= stakes[msg.sender].amount;
 
         emit Unstaked(msg.sender, stakes[msg.sender].amount, reward);
         delete stakes[msg.sender];

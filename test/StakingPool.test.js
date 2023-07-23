@@ -43,7 +43,7 @@ describe('StakingPool', function () {
 
     await token.transfer(user.address, amount);
     await token.connect(user).approve(stakingPool.address, amount);
-    await stakingPool.connect(user).stake(amount);
+    await stakingPool.connect(user).stakeTokens(amount);
 
     const stake = await stakingPool.stakes(user.address);
     expect(stake.amount).to.equal(amount);
@@ -56,7 +56,7 @@ describe('StakingPool', function () {
     await token.transfer(user.address, amount);
     await token.connect(user).approve(stakingPool.address, amount);
 
-    await expect(stakingPool.connect(user).stake(amount)).to.be.revertedWith(
+    await expect(stakingPool.connect(user).stakeTokens(amount)).to.be.revertedWith(
       'StakingPool: Amount exceeds the maximum stake amount'
     );
   });
@@ -67,7 +67,7 @@ describe('StakingPool', function () {
     await token.transfer(user.address, amount);
     await token.connect(user).approve(stakingPool.address, amount);
 
-    await expect(stakingPool.connect(user).stake(amount)).to.be.revertedWith(
+    await expect(stakingPool.connect(user).stakeTokens(amount)).to.be.revertedWith(
       'StakingPool: Amount exceeds pool capacity'
     );
   });
@@ -78,9 +78,9 @@ describe('StakingPool', function () {
 
     await token.transfer(user.address, amount);
     await token.connect(user).approve(stakingPool.address, amount);
-    await stakingPool.connect(user).stake(amount);
+    await stakingPool.connect(user).stakeTokens(amount);
     await ethers.provider.send('evm_increaseTime', [stakingTime]);
-    await stakingPool.connect(user).unstake();
+    await stakingPool.connect(user).unstakeTokens();
 
     const userBalance = await token.balanceOf(user.address);
     expect(userBalance).to.equal(ethers.utils.parseEther('1200'));
@@ -91,9 +91,9 @@ describe('StakingPool', function () {
 
     await token.transfer(user.address, amount);
     await token.connect(user).approve(stakingPool.address, amount);
-    await stakingPool.connect(user).stake(amount);
+    await stakingPool.connect(user).stakeTokens(amount);
 
-    await expect(stakingPool.connect(user).unstake()).to.be.revertedWith(
+    await expect(stakingPool.connect(user).unstakeTokens()).to.be.revertedWith(
       'StakingPool: Minimum staking period not reached'
     );
   });
